@@ -49,6 +49,7 @@ extern "C" int yywrap(void) { return 1; }
 /*State definitions for strings/comments*/
 %x COMMENT
 %x STRING
+%x STRING_ERR
 
 /*Other definitions*/
 DIGIT           [0-9]
@@ -85,10 +86,34 @@ DARROW          =>
 (?i:new)                { return (NEW); }
 (?i:isvoid)             { return (ISVOID); }
 (?i:not)                { return (NOT); }
+(?i:of)                 { return (OF); }
 
  /* Boolean Constants */
 t(?i:rue)               { cool_yylval.boolean = true; return (BOOL_CONST); }
 f(?i:alse)              { cool_yylval.boolean = false; return (BOOL_CONST); }
+
+
+
+ /*
+  * Single-character operators/tokens
+  */
+"+"                     { return '+'; }
+"-"                     { return '-'; }
+"*"                     { return '*'; }
+"/"                     { return '/'; }
+"<"                     { return '<'; }
+"="                     { return '='; }
+"."                     { return '.'; }
+";"                     { return ';'; }
+"~"                     { return '~'; }
+":"                     { return ':'; }
+"@"                     { return '@'; }
+","                     { return ','; }
+"("                     { return '('; }
+")"                     { return ')'; }
+"{"                     { return '{'; }
+"}"                     { return '}'; }
+
 
  /*
   * Integers and Identifiers
@@ -110,25 +135,7 @@ f(?i:alse)              { cool_yylval.boolean = false; return (BOOL_CONST); }
                                 return (OBJECTID);
                               }
 
- /*
-  * Single-character operators/tokens
-  */
-"+"                     { return '+'; }
-"-"                     { return '-'; }
-"*"                     { return '*'; }
-"/"                     { return '/'; }
-"<"                     { return '<'; }
-"="                     { return '='; }
-"."                     { return '.'; }
-";"                     { return ';'; }
-"~"                     { return '~'; }
-":"                     { return ':'; }
-"@"                     { return '@'; }
-","                     { return ','; }
-"("                     { return '('; }
-")"                     { return ')'; }
-"{"                     { return '{'; }
-"}"                     { return '}'; }
+
 
  /*
   * Whitespace & Tracking newlines
@@ -192,33 +199,57 @@ f(?i:alse)              { cool_yylval.boolean = false; return (BOOL_CONST); }
                           return (ERROR);
                         }
 
-<STRING>\\[0-7]{1,3}    { /* Handle octal escapes if needed, or parse standard character escapes */ }
-
 <STRING>\\n             { 
                           if (string_buf_ptr - string_buf >= MAX_STR_CONST - 1) {
-                              BEGIN(INITIAL); cool_yylval.error_msg = "String constant too long"; return (ERROR);
+                              BEGIN(STRING_ERR); cool_yylval.error_msg = "String constant too long"; return (ERROR);
                           }
                           *string_buf_ptr++ = '\n'; 
                         }
-<STRING>\\t             { *string_buf_ptr++ = '\t'; }
-<STRING>\\b             { *string_buf_ptr++ = '\b'; }
-<STRING>\\f             { *string_buf_ptr++ = '\f'; }
 
-<STRING>\\\n            { curr_lineno++; *string_buf_ptr++ = '\n'; }
-<STRING>\\.             { *string_buf_ptr++ = yytext[1]; }
+<STRING>\\t             { 
+                          if (string_buf_ptr - string_buf >= MAX_STR_CONST - 1) {
+                              BEGIN(STRING_ERR); cool_yylval.error_msg = "String constant too long"; return (ERROR);
+                          }
+                          *string_buf_ptr++ = '\t'; 
+                        }
 
-<STRING>\0              {
-                          /* Cool strings cannot contain embedded null characters */
+<STRING>\\b             { 
+                          if (string_buf_ptr - string_buf >= MAX_STR_CONST - 1) {
+                              BEGIN(STRING_ERR); cool_yylval.error_msg = "String constant too long"; return (ERROR);
+                          }
+                          *string_buf_ptr++ = '\b'; 
+                        }
+
+<STRING>\\f             { 
+                          if (string_buf_ptr - string_buf >= MAX_STR_CONST - 1) {
+                              BEGIN(STRING_ERR); cool_yylval.error_msg = "String constant too long"; return (ERROR);
+                          }
+                          *string_buf_ptr++ = '\f'; 
+                        }
+
+<STRING>\\\n            {
+                          if (string_buf_ptr - string_buf >= MAX_STR_CONST - 1) {
+                              BEGIN(STRING_ERR); cool_yylval.error_msg = "String constant too long"; return (ERROR);
+                          }
+                          *string_buf_ptr++ = '\n';
+                        }  
+
+<STRING>\0|\\\0         {
                           cool_yylval.error_msg = "String contains null character";
-                          /* Advance past rest of string to recover */
-                          while(yyinput() != '"' && yyinput() != '\n' && yyinput() != EOF);
-                          BEGIN(INITIAL);
+                          BEGIN(STRING_ERR);
                           return (ERROR);
+                        }
+
+<STRING>\\.             { 
+                          if (string_buf_ptr - string_buf >= MAX_STR_CONST - 1) {
+                              BEGIN(STRING_ERR); cool_yylval.error_msg = "String constant too long"; return (ERROR);
+                          }
+                          *string_buf_ptr++ = yytext[1]; 
                         }
 
 <STRING>.               {
                           if (string_buf_ptr - string_buf >= MAX_STR_CONST - 1) {
-                              BEGIN(INITIAL); 
+                              BEGIN(STRING_ERR); 
                               cool_yylval.error_msg = "String constant too long"; 
                               return (ERROR);
                           }
@@ -231,4 +262,13 @@ f(?i:alse)              { cool_yylval.boolean = false; return (BOOL_CONST); }
                           return (ERROR);
                         }
 
+.                       {
+                          cool_yylval.error_msg = yytext;
+                          return (ERROR);
+                        }
+ /* string error handling when state is activated. This makes it so errors found in strings like a \0 or a string that exceeds buffer, it will continue reading in string mode until quote reached */
+<STRING_ERR>"\""          { BEGIN(INITIAL); }
+<STRING_ERR>\n          { curr_lineno++; BEGIN(INITIAL); }
+<STRING_ERR>\\\n         { curr_lineno++; }
+<STRING_ERR>.           { /* eat everything else safely */ }
 %%

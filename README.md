@@ -1,2 +1,2 @@
 # C__OOL-Compiler
-Custom compiler for C_OOL (Compiled Object Oriented Langauge)
+Building custom compiler for the COOL object oriented language from scratch (covers lexing, parsing, codegen)

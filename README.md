@@ -4,10 +4,12 @@ A from-scratch compiler for the COOL (Classroom Object-Oriented Language), cover
 
 ## Components
 
-| Phase | Directory | Status |
-|-------|-----------|--------|
-| Lexer | `PA2/` | Complete |
-| Parser | `PA3/` | Complete |
+| Phase | Directory | Primary implementation | Status |
+|-------|-----------|------------------------|--------|
+| Lexer | `PA2/` | [`cool.flex`](PA2/cool.flex) | Complete |
+| Parser | `PA3/` | [`cool.y`](PA3/cool.y) | Complete |
+
+Most of the compiler logic for these phases lives in those two files; the rest of each directory is build tooling, drivers, and course-provided infrastructure.
 
 ## Quick start
 

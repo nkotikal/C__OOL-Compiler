@@ -2,6 +2,8 @@
 
 LALR parser for COOL, built with [Bison](https://www.gnu.org/software/bison/). Reads tokens from the PA2 lexer and builds an abstract syntax tree (AST).
 
+**Primary implementation:** [`cool.y`](cool.y) — the full COOL grammar, precedence rules, AST construction, and error recovery live here. Everything else in this directory is driver and infrastructure code.
+
 ## Prerequisites
 
 Build the lexer first:
@@ -46,7 +48,7 @@ Tests live in `tests/` as paired `.cl` input and `.expected` output files. The s
 
 | File | Role |
 |------|------|
-| `cool.y` | Grammar specification (edit this) |
+| **`cool.y`** | **Parser implementation** — grammar, precedence, and AST actions |
 | `cool-parse.cc` | Bison-generated parser (do not edit) |
 | `parser-phase.cc` | Stand-alone driver |
 | `tokens-lex.cc` | Token reader for the parser pipeline |

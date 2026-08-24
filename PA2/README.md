@@ -2,6 +2,8 @@
 
 Hand-written lexical analyzer for the Classroom Object-Oriented Language (COOL), built with [Flex](https://github.com/westes/flex).
 
+**Primary implementation:** [`cool.flex`](cool.flex) — all tokenization rules, states, and lexical error handling live here. Everything else in this directory is driver and infrastructure code.
+
 ## Building
 
 ```bash
@@ -37,7 +39,7 @@ Tests live in `tests/` as paired `.cl` input and `.expected` output files. The s
 
 | File | Role |
 |------|------|
-| `cool.flex` | Lexer specification (edit this) |
+| **`cool.flex`** | **Lexer implementation** — patterns, actions, and states |
 | `cool-lex.cc` | Flex-generated scanner (do not edit) |
 | `lextest.cc` | Stand-alone driver |
 | `utilities.cc` | Token formatting helpers |

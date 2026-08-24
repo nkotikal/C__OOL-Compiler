@@ -1,70 +1,35 @@
+ASSN     = 2
+CLASSDIR = /usr/class
 
-ASSN = 2
-CLASS= cs143
-CLASSDIR= /usr/class
-LIB= -lfl
+SRC      = cool.flex lextest.cc utilities.cc stringtab.cc handle_flags.cc
+GEN      = cool-lex.cc
+OBJS     = lextest.o utilities.o stringtab.o handle_flags.o cool-lex.o
 
-SRC= cool.flex test.cl README 
-CSRC= lextest.cc utilities.cc stringtab.cc handle_flags.cc
-TSRC= mycoolc
-HSRC= 
-CGEN= cool-lex.cc
-HGEN=
-LIBS= parser semant cgen
-CFIL= ${CSRC} ${CGEN}
-LSRC= Makefile
-OBJS= ${CFIL:.cc=.o}
-OUTPUT= test.output
+CPPINCLUDE = -I. -I$(CLASSDIR)/include/PA$(ASSN) -I$(CLASSDIR)/src/PA$(ASSN)
 
-CPPINCLUDE= -I. -I${CLASSDIR}/include/PA${ASSN} -I${CLASSDIR}/src/PA${ASSN}
+CC       = g++
+CFLAGS   = -g -Wall -Wno-unused -Wno-write-strings $(CPPINCLUDE)
+FLEX     = flex -d -ocool-lex.cc
+LIB      = -lfl
 
+.PHONY: all clean test
 
-FFLAGS= -d -ocool-lex.cc
+all: lexer
 
-CC=g++
-CFLAGS= -g -Wall -Wno-unused -Wno-write-strings ${CPPINCLUDE}
-FLEX=flex ${FFLAGS}
-DEPEND = ${CC} -MM ${CPPINCLUDE}
+lexer: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) $(LIB) -o $@
 
+cool-lex.cc: cool.flex
+	$(FLEX) $<
 
-source : ${SRC} ${TSRC} ${LSRC} ${LIBS} lsource
+cool-lex.o: cool-lex.cc
+	$(CC) $(CFLAGS) -c $<
 
-lsource: ${LSRC}
+%.o: %.cc
+	$(CC) $(CFLAGS) -c $<
 
-${OUTPUT}:	lexer test.cl
-	@rm -f test.output
-	-./lexer test.cl >test.output 2>&1 
+test: lexer
+	./run_tests.sh
 
-lexer: ${OBJS}
-	${CC} ${CFLAGS} ${OBJS} ${LIB} -o lexer
-
-.cc.o:
-	${CC} ${CFLAGS} -c $<
-
-cool-lex.cc: cool.flex 
-	${FLEX} cool.flex
-
-dotest:	lexer test.cl
-	./lexer test.cl
-
-${LIBS}:
-	${CLASSDIR}/etc/link-object ${ASSN} $@
-
-${TSRC} ${CSRC}:
-	-ln -s ${CLASSDIR}/src/PA${ASSN}/$@ $@
-
-${HSRC}:
-	-ln -s ${CLASSDIR}/include/PA${ASSN}/$@ $@
-
-clean :
-	-rm -f ${OUTPUT} *.s core ${OBJS} lexer cool-lex.cc *~ parser cgen semant
-
-clean-compile:
-	@-rm -f core ${OBJS} cool-lex.cc ${LSRC}
-
-%.d: %.cc ${SRC} ${LSRC}
-	${SHELL} -ec '${DEPEND} $< | sed '\''s/\($*\.o\)[ :]*/\1 $@ : /g'\'' > $@'
-
--include ${CFIL:.cc=.d}
-
-
+clean:
+	rm -f $(OBJS) lexer $(GEN) test.output *.d

@@ -1,8 +1,6 @@
 /*
-*  cool.y
-*              Parser definition for the COOL language.
-*
-*/
+ * Parser definition for COOL.
+ */
 %{
   #include <iostream>
   #include "cool-tree.h"
@@ -11,33 +9,24 @@
 
   extern char *curr_filename;
 
-  /* Locations */
-  #define YYLTYPE int              /* the type of locations */
-  #define cool_yylloc curr_lineno  /* use the curr_lineno from the lexer
-  for the location of tokens */
+  #define YYLTYPE int
+  #define cool_yylloc curr_lineno
 
-    extern int node_lineno;          /* set before constructing a tree node
-    to whatever you want the line number
-    for the tree node to be */
+  extern int node_lineno;
 
-
-      #define YYLLOC_DEFAULT(Current, Rhs, N)         \
-      Current = Rhs[1];                             \
-      node_lineno = Current;
-
-
-    #define SET_NODELOC(Current)  \
+  #define YYLLOC_DEFAULT(Current, Rhs, N) \
+    Current = Rhs[1]; \
     node_lineno = Current;
 
-    void yyerror(char *s);        /*  defined below; called for each parse error */
-    extern int yylex();           /*  the entry point to the lexer  */
+  #define SET_NODELOC(Current) \
+    node_lineno = Current;
 
-    /************************************************************************/
-    /*                DONT CHANGE ANYTHING IN THIS SECTION                  */
+  void yyerror(char *s);
+  extern int yylex();
 
-    Program ast_root;         /* the result of the parse  */
-    Classes parse_results;        /* for use in semantic analysis */
-    int omerrs = 0;               /* number of errors in lexing and parsing */
+  Program ast_root;
+  Classes parse_results;
+  int omerrs = 0;
 %}
 
     /* A union of all the types that can be the result of parsing actions. */
@@ -66,10 +55,7 @@
     %token <symbol>  TYPEID 278 OBJECTID 279
     %token ASSIGN 280 NOT 281 LE 282 ERROR 283
 
-    /*  DON'T CHANGE ANYTHING ABOVE THIS LINE, OR YOUR PARSER WONT WORK       */
-    /**************************************************************************/
-
-    /* Declare types for the grammar's non-terminals. */
+    /* Non-terminal types */
     %type <program> program
     %type <classes> class_list
     %type <class_> class

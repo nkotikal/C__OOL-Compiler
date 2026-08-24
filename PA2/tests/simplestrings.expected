@@ -1,0 +1,5 @@
+#name "simplestrings.cl"
+#1 STR_CONST "hello"
+#2 STR_CONST ""
+#3 STR_CONST "with spaces"
+#4 STR_CONST "multi\nline"

@@ -1,0 +1,2 @@
+#name "string_too_long.cl"
+#1 ERROR "String constant too long"

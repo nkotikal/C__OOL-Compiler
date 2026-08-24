@@ -1,0 +1,9 @@
+#name "bad_identifiers.cl"
+#1 INT_CONST 1
+#1 OBJECTID bad
+#2 TYPEID Bad
+#2 '-'
+#2 OBJECTID id
+#3 OBJECTID bad
+#3 '-'
+#3 OBJECTID id

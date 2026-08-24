@@ -1,0 +1,10 @@
+#name "identifiers.cl"
+#1 TYPEID Object
+#2 TYPEID SELF_TYPE
+#3 TYPEID IO
+#4 TYPEID Main
+#5 OBJECTID x
+#6 OBJECTID foo_bar
+#7 OBJECTID a1b2c3
+#8 ERROR "_"
+#8 OBJECTID leading

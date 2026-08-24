@@ -1,0 +1,8 @@
+lexer
+*.o
+*.d
+cool-lex.cc
+test.output
+parser
+semant
+cgen

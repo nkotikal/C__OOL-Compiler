@@ -1,0 +1,7 @@
+#name "booleans.cl"
+#1 BOOL_CONST true
+#2 BOOL_CONST false
+#3 TYPEID True
+#4 TYPEID False
+#5 BOOL_CONST true
+#6 BOOL_CONST false

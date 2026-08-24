@@ -1,0 +1,2 @@
+#name "eof_in_string.cl"
+#2 ERROR "Unterminated string constant"

@@ -1,0 +1,2 @@
+#name "backslash_newline.cl"
+#1 STR_CONST "line one \ncontinued"

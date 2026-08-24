@@ -1,0 +1,4 @@
+#name "escapes.cl"
+#1 STR_CONST "012\\0\\1\\2\t\f\b\nra\bcde\fg"
+#2 STR_CONST "\"still inside\""
+#3 STR_CONST "escaped quote: \""

@@ -1,0 +1,8 @@
+#name "lineno.cl"
+#1 CLASS
+#2 TYPEID Main
+#3 INHERITS
+#4 TYPEID IO
+#5 '{'
+#6 '}'
+#6 ';'

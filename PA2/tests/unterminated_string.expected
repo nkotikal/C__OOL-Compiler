@@ -1,0 +1,11 @@
+#name "unterminated_string.cl"
+#1 CLASS
+#1 TYPEID Main
+#1 '{'
+#2 OBJECTID x
+#2 ':'
+#2 TYPEID Int
+#2 ASSIGN
+#3 ERROR "Unterminated string constant"
+#3 '}'
+#3 ';'

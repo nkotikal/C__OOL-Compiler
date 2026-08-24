@@ -1,0 +1,5 @@
+#name "integers.cl"
+#1 INT_CONST 0
+#2 INT_CONST 42
+#3 INT_CONST 007
+#4 INT_CONST 2147483647

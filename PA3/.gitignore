@@ -1,0 +1,11 @@
+parser
+*.o
+*.d
+cool-parse.cc
+cool.tab.h
+cool.output
+good.output
+bad.output
+lexer
+semant
+cgen

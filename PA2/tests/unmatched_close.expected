@@ -1,0 +1,2 @@
+#name "unmatched_close.cl"
+#1 ERROR "Unmatched *)"

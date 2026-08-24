@@ -1,0 +1,2 @@
+#name "null_in_string.cl"
+#1 ERROR "String contains null character"

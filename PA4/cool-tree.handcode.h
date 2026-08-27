@@ -44,6 +44,8 @@ typedef Expressions_class *Expressions;
 typedef list_node<Case> Cases_class;
 typedef Cases_class *Cases;
 
+struct type_env_t;
+
 #define Program_EXTRAS                          \
 virtual void semant() = 0;			\
 virtual void dump_with_types(ostream&, int) = 0; 
@@ -109,6 +111,9 @@ virtual void dump_with_types(ostream& ,int) = 0;
 
 
 #define branch_EXTRAS                                   \
+Symbol get_name() { return name; }                      \
+Symbol get_type_decl() { return type_decl; }            \
+Expression get_expr() { return expr; }                  \
 void dump_with_types(ostream& ,int);
 
 
@@ -116,11 +121,127 @@ void dump_with_types(ostream& ,int);
 Symbol type;                                 \
 Symbol get_type() { return type; }           \
 Expression set_type(Symbol s) { type = s; return this; } \
+virtual Symbol type_check(type_env_t &) = 0;   \
 virtual void dump_with_types(ostream&,int) = 0;  \
 void dump_type(ostream&, int);               \
 Expression_class() { type = (Symbol) NULL; }
 
 #define Expression_SHARED_EXTRAS           \
 void dump_with_types(ostream&,int); 
+
+#define assign_EXTRAS \
+Symbol get_name() { return name; } \
+Expression get_expr() { return expr; } \
+Symbol type_check(type_env_t &);
+
+#define static_dispatch_EXTRAS \
+Expression get_expr() { return expr; } \
+Symbol get_type_name() { return type_name; } \
+Symbol get_name() { return name; } \
+Expressions get_actual() { return actual; } \
+Symbol type_check(type_env_t &);
+
+#define dispatch_EXTRAS \
+Expression get_expr() { return expr; } \
+Symbol get_name() { return name; } \
+Expressions get_actual() { return actual; } \
+Symbol type_check(type_env_t &);
+
+#define cond_EXTRAS \
+Expression get_pred() { return pred; } \
+Expression get_then_exp() { return then_exp; } \
+Expression get_else_exp() { return else_exp; } \
+Symbol type_check(type_env_t &);
+
+#define loop_EXTRAS \
+Expression get_pred() { return pred; } \
+Expression get_body() { return body; } \
+Symbol type_check(type_env_t &);
+
+#define typcase_EXTRAS \
+Expression get_expr() { return expr; } \
+Cases get_cases() { return cases; } \
+Symbol type_check(type_env_t &);
+
+#define block_EXTRAS \
+Expressions get_body() { return body; } \
+Symbol type_check(type_env_t &);
+
+#define let_EXTRAS \
+Symbol get_identifier() { return identifier; } \
+Symbol get_type_decl() { return type_decl; } \
+Expression get_init() { return init; } \
+Expression get_body() { return body; } \
+Symbol type_check(type_env_t &);
+
+#define plus_EXTRAS \
+Expression get_e1() { return e1; } \
+Expression get_e2() { return e2; } \
+Symbol type_check(type_env_t &);
+
+#define sub_EXTRAS \
+Expression get_e1() { return e1; } \
+Expression get_e2() { return e2; } \
+Symbol type_check(type_env_t &);
+
+#define mul_EXTRAS \
+Expression get_e1() { return e1; } \
+Expression get_e2() { return e2; } \
+Symbol type_check(type_env_t &);
+
+#define divide_EXTRAS \
+Expression get_e1() { return e1; } \
+Expression get_e2() { return e2; } \
+Symbol type_check(type_env_t &);
+
+#define neg_EXTRAS \
+Expression get_e1() { return e1; } \
+Symbol type_check(type_env_t &);
+
+#define lt_EXTRAS \
+Expression get_e1() { return e1; } \
+Expression get_e2() { return e2; } \
+Symbol type_check(type_env_t &);
+
+#define eq_EXTRAS \
+Expression get_e1() { return e1; } \
+Expression get_e2() { return e2; } \
+Symbol type_check(type_env_t &);
+
+#define leq_EXTRAS \
+Expression get_e1() { return e1; } \
+Expression get_e2() { return e2; } \
+Symbol type_check(type_env_t &);
+
+#define comp_EXTRAS \
+Expression get_e1() { return e1; } \
+Symbol type_check(type_env_t &);
+
+#define int_const_EXTRAS \
+Symbol get_token() { return token; } \
+Symbol type_check(type_env_t &);
+
+#define bool_const_EXTRAS \
+Boolean get_val() { return val; } \
+Symbol type_check(type_env_t &);
+
+#define string_const_EXTRAS \
+Symbol get_token() { return token; } \
+Symbol type_check(type_env_t &);
+
+#define new__EXTRAS \
+Symbol get_type_name() { return type_name; } \
+Symbol type_check(type_env_t &);
+
+#define isvoid_EXTRAS \
+Expression get_e1() { return e1; } \
+Symbol type_check(type_env_t &);
+
+#define object_EXTRAS \
+Symbol get_name() { return name; } \
+Symbol type_check(type_env_t &);
+
+#define no_expr_EXTRAS \
+Symbol type_check(type_env_t &);
 
 #endif

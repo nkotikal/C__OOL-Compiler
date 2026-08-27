@@ -25,8 +25,13 @@ private:
   int semant_errors;
   void install_basic_classes();
   void install_class(Class_ c);
+  void check_class_hierarchy();
   ostream& error_stream;
   std::map<Symbol, Class_> name_to_node;
+
+  Class_ get_class(Symbol name);
+  bool is_subtype(Symbol child, Symbol parent, Class_ cur);
+  Symbol lub(Symbol t1, Symbol t2, Class_ cur);
 
 public:
   ClassTable(Classes);

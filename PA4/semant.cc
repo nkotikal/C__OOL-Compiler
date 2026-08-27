@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <set>
 #include "semant.h"
 #include "utilities.h"
 
@@ -88,17 +89,115 @@ void ClassTable::install_class(Class_ c)
     Symbol name = c->get_name();
 
     if (name == SELF_TYPE) {
-	semant_error(c) << "Class name cannot be SELF_TYPE.\n";
+	    semant_error(c) << "Class name cannot be SELF_TYPE.\n";
 	return;
     }
 
     if (name_to_node.find(name) != name_to_node.end()) {
-	semant_error(c) << "Class " << name << " was previously defined.\n";
+	    semant_error(c) << "Class " << name << " was previously defined.\n";
 	return;
     }
 
     name_to_node[name] = c;
 }
+
+Class_ ClassTable::get_class(Symbol name)
+{
+    auto it = name_to_node.find(name);
+    if (it == name_to_node.end()) return NULL;
+    return it->second;
+}
+
+bool ClassTable::is_subtype(Symbol child, Symbol parent, Class_ cur)
+{
+    if (child == parent)
+	return true;
+
+    if (child == SELF_TYPE)
+	    child = cur->get_name();
+    if (parent == SELF_TYPE)
+	    parent = cur->get_name();
+
+    if (child == parent)
+	return true;
+
+    while (child != No_class) {
+        if (child == parent)
+            return true;
+        Class_ child_class = get_class(child);
+        if (child_class == NULL)
+            return false;
+        child = child_class->get_parent();
+    }
+
+    return false;
+}
+
+Symbol ClassTable::lub(Symbol t1, Symbol t2, Class_ cur) {
+    if (t1 == No_type)
+	return t2;
+    if (t2 == No_type)
+	return t1;
+
+    std::set<Symbol> ancestors;
+    Symbol c = t1;
+    for (;;) {
+	Symbol type = (c == SELF_TYPE) ? cur->get_name() : c;
+	ancestors.insert(type);
+	if (type == Object)
+	    break;
+	Class_ type_class = get_class(type);
+	if (type_class == NULL)
+	    break;
+	c = type_class->get_parent();
+    }
+
+    c = t2;
+    for (;;) {
+	Symbol type = (c == SELF_TYPE) ? cur->get_name() : c;
+	if (ancestors.find(type) != ancestors.end())
+	    return type;
+	if (type == Object)
+	    return Object;
+	Class_ type_class = get_class(type);
+	if (type_class == NULL)
+	    return Object;
+	c = type_class->get_parent();
+    }
+}
+
+void ClassTable::check_class_hierarchy() {
+    for (auto &[_, c] : name_to_node) {
+        Symbol parent = c->get_parent();
+
+        //First handle Object
+        if (parent == No_class) continue;
+
+        if (parent == Int || parent == Bool || parent == Str || parent == SELF_TYPE) {
+            semant_error(c) << "Class " << c->get_name() << " cannot inherit from " << parent << ".\n";
+            continue;
+        } else if (name_to_node.find(parent) == name_to_node.end()) {
+            semant_error(c) << "Class " << c->get_name() << " inherits from undefined class " << parent << ".\n";
+            continue;
+        }
+
+        //check for cycles
+        Symbol current = parent;
+        std::set<Symbol> visited;
+        while (current != No_class) {
+            if (visited.find(current) != visited.end()) {
+                semant_error(c) << "Inheritance cycle found for " << c->get_name() << endl;
+                break;
+            }
+            visited.insert(current);
+            auto it = name_to_node.find(current);
+            if (it == name_to_node.end()) break;
+            current = it->second->get_parent();
+        }
+        
+    }
+}
+
 
 ClassTable::ClassTable(Classes classes) : semant_errors(0) , error_stream(cerr) {
     install_basic_classes();
@@ -106,6 +205,7 @@ ClassTable::ClassTable(Classes classes) : semant_errors(0) , error_stream(cerr) 
     for (int i = classes->first(); classes->more(i); i = classes->next(i)) {
 	install_class(classes->nth(i));
     }
+    check_class_hierarchy();
 }
 
 void ClassTable::install_basic_classes() {

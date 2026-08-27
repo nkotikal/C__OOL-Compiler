@@ -71,6 +71,7 @@ void dump_with_types(ostream&,int);
 
 
 #define Feature_EXTRAS                                        \
+virtual Symbol get_name() = 0;                                 \
 virtual void dump_with_types(ostream&,int) = 0; 
 
 
@@ -78,14 +79,28 @@ virtual void dump_with_types(ostream&,int) = 0;
 void dump_with_types(ostream&,int);    
 
 
+#define method_EXTRAS                                           \
+Symbol get_name() { return name; }                              \
+Formals get_formals() { return formals; }                       \
+Symbol get_return_type() { return return_type; }                \
+Expression get_expr() { return expr; }
 
+
+#define attr_EXTRAS                                             \
+Symbol get_name() { return name; }                              \
+Symbol get_type_decl() { return type_decl; }                    \
+Expression get_init() { return init; }
 
 
 #define Formal_EXTRAS                              \
+virtual Symbol get_name() = 0;                   \
+virtual Symbol get_type_decl() = 0;              \
 virtual void dump_with_types(ostream&,int) = 0;
 
 
 #define formal_EXTRAS                           \
+Symbol get_name() { return name; }              \
+Symbol get_type_decl() { return type_decl; }    \
 void dump_with_types(ostream&,int);
 
 

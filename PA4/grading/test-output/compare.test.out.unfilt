@@ -1,0 +1,2 @@
+./compare.test:10: Illegal comparison with type A = B.
+Compilation halted due to static semantic errors.

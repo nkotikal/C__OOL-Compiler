@@ -1003,7 +1003,7 @@ Symbol no_expr_class::type_check(type_env_t &)
 Symbol object_class::type_check(type_env_t &env)
 {
     if (name == self) {
-	set_type(env.curr->get_name());
+	set_type(SELF_TYPE);
 	return type;
     }
 

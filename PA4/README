@@ -164,3 +164,82 @@ Instructions
 
 Write-up for PA4
 ----------------
+
+### Overview
+
+The semantic analyzer consumes the abstract syntax tree produced by the parser
+and performs two tasks: (1) verify that the Cool program obeys static semantic
+rules, and (2) annotate every expression node with its static type. The entry
+point is `program_class::semant()`, which builds a `ClassTable` and then runs
+expression type-checking over each user-defined class.
+
+### Design
+
+The checker is organized in two phases.
+
+**Phase 1 — class and feature analysis (ClassTable constructor).**  
+We register the five basic classes and all user classes in `name_to_node`,
+validate the inheritance graph, and build per-class method and attribute tables.
+Classes are processed in breadth-first order from `Object` so that each class
+inherits a copy of its parent's `method_env` and `attr_env` before adding its
+own features. Method override rules (identical formal types, covariant return
+type via `conforms`) and attribute restrictions (no redefinition, no `self`)
+are enforced here. This phase answers global questions: does the class exist,
+what methods does it have, is the override legal?
+
+**Phase 2 — expression type-checking.**  
+For each user class we construct a `type_env_t` containing a pointer to the
+`ClassTable`, the current class (`curr`, for `SELF_TYPE` and `self`), and an
+object environment (`objenv`) implemented with `SymbolTable<Symbol, Symbol>`.
+`init_class` seeds `objenv` with `self` and all visible attributes. Method
+bodies extend the environment with formal parameters using `enterscope` /
+`exitscope`; `let` and `case` branches do the same for local bindings.
+
+Each of the 24 expression AST node types implements `type_check(type_env_t &)`,
+which recursively checks sub-expressions, applies the appropriate typing rule,
+and calls `set_type`. On error we report through `semant_error` and continue
+with type `Object` so that multiple errors can be found in one run.
+
+**ClassTable vs SymbolTable.**  
+`ClassTable` maps class names to features and supports dispatch and subtyping;
+it has no nested scopes. `SymbolTable` tracks lexically scoped names (formals,
+`let` variables, case bindings) with `lookup` (search all scopes) and `probe`
+(current scope only, for duplicate detection).
+
+**Type helpers.**  
+`resolve_type` expands `SELF_TYPE` relative to the current class.
+`is_subtype` and `conforms` implement the Cool subtype relation (with the
+standard rule that only `SELF_TYPE` is a subtype of `SELF_TYPE`).
+`lub` computes least upper bounds for `if` and `case` result types.
+
+### Correctness
+
+The implementation follows the Cool type rules from the course manual. Class
+processing order guarantees inherited features are available before subclasses
+are checked. Dispatch looks up methods in `method_env` at the static type of the
+receiver; return types of `SELF_TYPE` methods are resolved to that static type.
+Assignment and `let` initialization use `conforms` so that inferred types may be
+subtypes of declared types. Equality is restricted to the basic types `Int`,
+`Bool`, and `String` with identical operand types.
+
+We do not modify the provided error-reporting routines; all errors increment the
+counter in `ClassTable` and `program_class::semant` exits non-zero when errors
+are present.
+
+### Test cases
+
+**good.cl** exercises legal combinations including: inheritance (`D` inherits
+`C`), method dispatch and `SELF_TYPE` returns (`IO.out_string(...).out_int(...)`),
+`if` / `case` (with `lub` across `D`, `C`, and `Object` branches), static
+dispatch (`@C.init`), `isvoid`, arithmetic and unary operators, integer
+comparisons, and boolean `not`. Running `./mysemant good.cl` produces a fully
+type-annotated AST with no errors.
+
+**bad.cl** exercises multiple independent semantic errors in one `main` body:
+wrong dispatch argument type, wrong arity, undefined method, non-`Int` arithmetic,
+non-`Bool` `if` condition, bad `let` initializer type, assignment to an undefined
+variable, incompatible `case` branch type, `new SELF_TYPE`, illegal equality on
+class types, bad operand to `not`, incompatible static dispatch, and undefined
+identifier. Each error is reported with a line number.
+
+Run `make dotest` to verify both files.

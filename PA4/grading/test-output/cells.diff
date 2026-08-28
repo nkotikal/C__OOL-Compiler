@@ -1,0 +1,82 @@
+37,38c37,38
+<         : SELF_TYPE
+<       : SELF_TYPE
+---
+>         : CellularAutomaton
+>       : CellularAutomaton
+50c50
+<           : SELF_TYPE
+---
+>           : CellularAutomaton
+68c68
+<         : SELF_TYPE
+---
+>         : CellularAutomaton
+72,73c72,73
+<         : SELF_TYPE
+<       : SELF_TYPE
+---
+>         : CellularAutomaton
+>       : CellularAutomaton
+140c140
+<           : SELF_TYPE
+---
+>           : CellularAutomaton
+150c150
+<               : SELF_TYPE
+---
+>               : CellularAutomaton
+167c167
+<           : SELF_TYPE
+---
+>           : CellularAutomaton
+207c207
+<               : SELF_TYPE
+---
+>               : CellularAutomaton
+223c223
+<           : SELF_TYPE
+---
+>           : CellularAutomaton
+237c237
+<           : SELF_TYPE
+---
+>           : CellularAutomaton
+279c279
+<                     : SELF_TYPE
+---
+>                     : CellularAutomaton
+311c311
+<                     : SELF_TYPE
+---
+>                     : CellularAutomaton
+344c344
+<                   : SELF_TYPE
+---
+>                   : CellularAutomaton
+402c402
+<             : SELF_TYPE
+---
+>             : CellularAutomaton
+447c447
+<                         : SELF_TYPE
+---
+>                         : CellularAutomaton
+487,491c487,491
+<               : SELF_TYPE
+<             : SELF_TYPE
+<           : SELF_TYPE
+<         : SELF_TYPE
+<       : SELF_TYPE
+---
+>               : CellularAutomaton
+>             : CellularAutomaton
+>           : CellularAutomaton
+>         : CellularAutomaton
+>       : CellularAutomaton
+604,605c604,605
+<         : SELF_TYPE
+<       : SELF_TYPE
+---
+>         : Main
+>       : Main

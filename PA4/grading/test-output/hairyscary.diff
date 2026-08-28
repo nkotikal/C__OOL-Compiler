@@ -1,0 +1,48 @@
+18c18
+<         : SELF_TYPE
+---
+>         : Foo
+80c80
+<             : SELF_TYPE
+---
+>             : Foo
+91c91
+<           : SELF_TYPE
+---
+>           : Foo
+148c148
+<         : SELF_TYPE
+---
+>         : Bar
+162c162
+<         : SELF_TYPE
+---
+>         : Bar
+183c183
+<         : SELF_TYPE
+---
+>         : Razz
+251c251
+<             : SELF_TYPE
+---
+>             : Razz
+262c262
+<           : SELF_TYPE
+---
+>           : Razz
+292c292
+<         : SELF_TYPE
+---
+>         : Bazz
+335c335
+<         : SELF_TYPE
+---
+>         : Bazz
+351c351
+<           : SELF_TYPE
+---
+>           : Bazz
+359c359
+<         : SELF_TYPE
+---
+>         : Bazz

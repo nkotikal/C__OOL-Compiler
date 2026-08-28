@@ -1,2 +1,5 @@
 # Local maintenance notes (not for the public repo)
 CLEANUP_GUIDE.md
+.semant-progress.log
+.semant-progress.md
+interview-prep.md

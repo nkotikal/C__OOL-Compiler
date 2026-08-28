@@ -1,0 +1,56 @@
+28c28
+<           : SELF_TYPE
+---
+>           : List
+49c49
+<           : SELF_TYPE
+---
+>           : List
+57,58c57,58
+<         : SELF_TYPE
+<       : SELF_TYPE
+---
+>         : List
+>       : List
+82c82
+<         : SELF_TYPE
+---
+>         : List
+163,164c163,164
+<         : SELF_TYPE
+<       : SELF_TYPE
+---
+>         : Cons
+>       : Cons
+204c204
+<           : SELF_TYPE
+---
+>           : Main
+212c212
+<         : SELF_TYPE
+---
+>         : Main
+220c220
+<             : SELF_TYPE
+---
+>             : Main
+234c234
+<           : SELF_TYPE
+---
+>           : Main
+240c240
+<             : SELF_TYPE
+---
+>             : Main
+248c248
+<           : SELF_TYPE
+---
+>           : Main
+254c254
+<             : SELF_TYPE
+---
+>             : Main
+357c357
+<               : SELF_TYPE
+---
+>               : Main

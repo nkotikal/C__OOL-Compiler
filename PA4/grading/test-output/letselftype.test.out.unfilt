@@ -1,0 +1,2 @@
+./letselftype.test:3: Let variable y has undefined type SELF_TYPE.
+Compilation halted due to static semantic errors.

@@ -1,0 +1,3 @@
+./newselftype.test:3: 'new SELF_TYPE' is not meaningful.
+./newselftype.test:3: In call of method foo, type Object of parameter a does not conform to declared type A.
+Compilation halted due to static semantic errors.

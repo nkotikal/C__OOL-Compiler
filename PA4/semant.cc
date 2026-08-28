@@ -590,6 +590,11 @@ static bool is_basic_type(Symbol t)
     return t == Int || t == Bool || t == Str;
 }
 
+static bool is_reference_type(ClassTable *ct, Symbol t)
+{
+    return ct->type_is_valid(t, false) && !is_basic_type(t);
+}
+
 void ClassTable::init_class(type_env_t &env)
 {
     env.objenv->enterscope();
@@ -625,7 +630,7 @@ void ClassTable::type_check_method(type_env_t &env, method_class *m)
 
     Symbol body_type = m->get_expr()->type_check(env);
     Symbol ret_type = m->get_return_type();
-    if (!conforms(body_type, ret_type, env.curr)) {
+    if (!is_subtype(body_type, ret_type, env.curr)) {
 	semant_error(env.curr) << "Inferred return type " << body_type
 			       << " of method " << m->get_name()
 			       << " does not conform to declared return type "
@@ -689,10 +694,14 @@ Symbol ClassTable::type_check_dispatch(type_env_t &env, Expression caller,
     }
 
     Symbol ret_type = method->get_return_type();
-    if (ret_type == SELF_TYPE)
-	ret_type = lookup_type;
-    else
+    if (ret_type == SELF_TYPE) {
+	if (expr_type == SELF_TYPE)
+	    ret_type = SELF_TYPE;
+	else
+	    ret_type = resolve_type(expr_type, env.curr);
+    } else {
 	ret_type = resolve_type(ret_type, env.curr);
+    }
 
     caller->set_type(ret_type);
     return ret_type;
@@ -724,6 +733,12 @@ void ClassTable::type_check_classes(Classes classes)
 
 Symbol assign_class::type_check(type_env_t &env)
 {
+    if (name == self) {
+	env.ct->semant_error(env.curr->get_filename(), this) << "Cannot assign to 'self'.\n";
+	set_type(Object);
+	return type;
+    }
+
     Symbol *var_type = env.objenv->lookup(name);
     if (var_type == NULL) {
 	env.ct->semant_error(env.curr->get_filename(), this) << "Assignment to undefined variable "
@@ -780,6 +795,9 @@ Symbol loop_class::type_check(type_env_t &env)
 Symbol typcase_class::type_check(type_env_t &env)
 {
     Symbol expr_type = expr->type_check(env);
+    Symbol scrutinee_type = expr_type;
+    if (scrutinee_type == SELF_TYPE)
+	scrutinee_type = env.curr->get_name();
     Symbol result = No_type;
     std::set<Symbol> seen;
 
@@ -793,7 +811,7 @@ Symbol typcase_class::type_check(type_env_t &env)
 	    continue;
 	}
 
-	if (!env.ct->is_subtype(branch_type, expr_type, env.curr)) {
+	if (!env.ct->is_subtype(branch_type, scrutinee_type, env.curr)) {
 	    env.ct->semant_error(env.curr->get_filename(), this) << "In case branch, type "
 						 << branch_type
 						 << " is not compatible with type "
@@ -837,7 +855,7 @@ Symbol let_class::type_check(type_env_t &env)
 	return type;
     }
 
-    if (!env.ct->type_is_valid(type_decl, false)) {
+    if (!env.ct->type_is_valid(type_decl, true)) {
 	env.ct->semant_error(env.curr->get_filename(), this) << "Let variable " << identifier
 					     << " has undefined type " << type_decl << ".\n";
 	set_type(Object);
@@ -932,7 +950,7 @@ Symbol eq_class::type_check(type_env_t &env)
 {
     Symbol t1 = e1->type_check(env);
     Symbol t2 = e2->type_check(env);
-    if (!is_basic_type(t1) || !is_basic_type(t2) || t1 != t2) {
+    if (t1 != t2 && !(is_reference_type(env.ct, t1) && is_reference_type(env.ct, t2))) {
 	env.ct->semant_error(env.curr->get_filename(), this) << "Illegal comparison with type "
 					     << t1 << " = " << t2 << ".\n";
     }
@@ -971,8 +989,7 @@ Symbol string_const_class::type_check(type_env_t &)
 Symbol new__class::type_check(type_env_t &env)
 {
     if (type_name == SELF_TYPE) {
-	env.ct->semant_error(env.curr->get_filename(), this) << "'new SELF_TYPE' is not meaningful.\n";
-	set_type(Object);
+	set_type(SELF_TYPE);
 	return type;
     }
 

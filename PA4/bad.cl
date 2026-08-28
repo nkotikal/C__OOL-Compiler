@@ -23,7 +23,6 @@ Class Main {
 	  let a : Int <- 1, a : Int <- 2 in a;
 	  x <- 1;
 	  case "s" of i : Int => 1; esac;
-	  new SELF_TYPE;
 	  (new C) = (new C);
 	  not 1;
 	  (new Object)@C.init(1, true);

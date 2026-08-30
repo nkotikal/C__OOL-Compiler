@@ -17,4 +17,5 @@ Most of the compiler logic for these phases lives in those two files; the rest o
 ```bash
 cd PA2 && make && make test    # build and test the lexer
 cd PA3 && make && make test    # build and test the parser (requires PA2 lexer)
+cd PA4 && make && make test    # build and test the semantic analyzer (requires PA2 lexer and PA3 parser)
 ```

@@ -8,6 +8,7 @@ A from-scratch compiler for the COOL (Classroom Object-Oriented Language), cover
 |-------|-----------|------------------------|--------|
 | Lexer | `PA2/` | [`cool.flex`](PA2/cool.flex) | Complete |
 | Parser | `PA3/` | [`cool.y`](PA3/cool.y) | Complete |
+| Semantic Analyzer | `PA4/` | [`semant.cc`](PA4/semant.cc) | Complete |
 
 Most of the compiler logic for these phases lives in those two files; the rest of each directory is build tooling, drivers, and course-provided infrastructure.
 
